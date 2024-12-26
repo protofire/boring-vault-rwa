@@ -80,10 +80,10 @@ contract DeployDecoderAndSanitizerScript is Script, Test, ContractNames, Mainnet
         //constructorArgs = abi.encode(liquidUsd, uniswapV3NonFungiblePositionManager);
         //deployer.deployContract(EtherFiLiquidUsdDecoderAndSanitizerName, creationCode, constructorArgs, 0);
 
-        //creationCode = type(LombardBtcDecoderAndSanitizer).creationCode;
+        creationCode = type(LombardBtcDecoderAndSanitizer).creationCode;
         //address baseUniswapV3NonFungiblePositionManager = 0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1;
-        //constructorArgs = abi.encode(boringVault, baseUniswapV3NonFungiblePositionManager);
-        //deployer.deployContract(LombardBtcDecoderAndSanitizerName, creationCode, constructorArgs, 0);
+        constructorArgs = abi.encode(boringVault, uniswapV3NonFungiblePositionManager);
+        deployer.deployContract(LombardBtcDecoderAndSanitizerName, creationCode, constructorArgs, 0);
 
         // new LombardBtcDecoderAndSanitizer(boringVault, baseUniswapV3NonFungiblePositionManager);
 
@@ -91,9 +91,9 @@ contract DeployDecoderAndSanitizerScript is Script, Test, ContractNames, Mainnet
         //constructorArgs = abi.encode(boringVault);
         //deployer.deployContract("Aera Vault Decoder and Santizier v0.0", creationCode, constructorArgs, 0);
         
-        creationCode = type(sBTCNDecoderAndSanitizer).creationCode;     
-        constructorArgs = abi.encode(boringVault, uniswapV3NonFungiblePositionManager); 
-        deployer.deployContract("Staked BTCN Decoder and Sanitizer V0.2", creationCode, constructorArgs, 0); 
+        //creationCode = type(sBTCNDecoderAndSanitizer).creationCode;     
+        //constructorArgs = abi.encode(boringVault, uniswapV3NonFungiblePositionManager); 
+        //deployer.deployContract("Staked BTCN Decoder and Sanitizer V0.2", creationCode, constructorArgs, 0); 
         
         vm.stopBroadcast();
     }

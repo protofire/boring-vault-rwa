@@ -36,6 +36,7 @@ import {MerklDecoderAndSanitizer} from "src/base/DecodersAndSanitizers/Protocols
 import {LidoDecoderAndSanitizer} from "src/base/DecodersAndSanitizers/Protocols/LidoDecoderAndSanitizer.sol";
 import {LombardBTCMinterDecoderAndSanitizer} from
     "src/base/DecodersAndSanitizers/Protocols/LombardBtcMinterDecoderAndSanitizer.sol";
+import {TellerDecoderAndSanitizer} from "src/base/DecodersAndSanitizers/Protocols/TellerDecoderAndSanitizer.sol"; 
 
 contract LombardBtcDecoderAndSanitizer is
     UniswapV3DecoderAndSanitizer,
@@ -62,6 +63,7 @@ contract LombardBtcDecoderAndSanitizer is
     CompoundV3DecoderAndSanitizer,
     MerklDecoderAndSanitizer,
     LidoDecoderAndSanitizer,
+    TellerDecoderAndSanitizer,
     LombardBTCMinterDecoderAndSanitizer
 {
     constructor(address _boringVault, address _uniswapV3NonFungiblePositionManager)

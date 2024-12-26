@@ -15,10 +15,9 @@ contract CreateLombardMerkleRootScript is Script, MerkleTreeHelper {
     using FixedPointMathLib for uint256;
 
     address public boringVault = 0x5401b8620E5FB570064CA9114fd1e135fd77D57c;
-    address public rawDataDecoderAndSanitizer = 0x1060E9391dfdba7F1F24D142eFE71544F590d33F;
+    address public rawDataDecoderAndSanitizer = 0x9D733E6Cc3c5e933BcE6B7E1478dB766F1377eAE;
     address public managerAddress = 0xcf38e37872748E3b66741A42560672A6cef75e9B;
     address public accountantAddress = 0x28634D0c5edC67CF2450E74deA49B90a4FF93dCE;
-
     address public pancakeSwapDataDecoderAndSanitizer = 0xac226f3e2677d79c0688A9f6f05B9B4eBBeDdebD;
 
     function setUp() external {}
@@ -179,6 +178,7 @@ contract CreateLombardMerkleRootScript is Script, MerkleTreeHelper {
 
         _addPancakeSwapV3Leafs(leafs, token0, token1);
 
+        setAddress(true, sourceChain, "rawDataDecoderAndSanitizer", rawDataDecoderAndSanitizer); 
         // ========================== Corn BTCN ==========================
         _addBTCNLeafs(
             leafs,
