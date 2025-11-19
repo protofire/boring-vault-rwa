@@ -55,6 +55,8 @@ contract CreateLombardMerkleRootScript is Script, MerkleTreeHelper {
          */
         borrowAssets = new ERC20[](1);
         borrowAssets[0] = getERC20(sourceChain, "WBTC");
+        claimAssets = new ERC20[](1);
+        claimAssets[0] = getERC20(sourceChain, "WBTC");
         _addSparkLendLeafs(leafs, supplyAssets, borrowAssets, claimAssets);
 
         // ========================== Gearbox ==========================

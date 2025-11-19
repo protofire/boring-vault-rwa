@@ -47,7 +47,12 @@ contract CreateLiquidUsualMerkleRootScript is Script, MerkleTreeHelper {
         borrowAssets[0] = getERC20(sourceChain, "USDC");
         borrowAssets[1] = getERC20(sourceChain, "USDT");
         borrowAssets[2] = getERC20(sourceChain, "DAI");
-        _addAaveV3Leafs(leafs, supplyAssets, borrowAssets);
+        ERC20[] memory claimAssets = new ERC20[](4);
+        claimAssets[0] = getERC20(sourceChain, "USDC");
+        claimAssets[1] = getERC20(sourceChain, "USDT");
+        claimAssets[2] = getERC20(sourceChain, "DAI");
+        claimAssets[3] = getERC20(sourceChain, "sDAI");
+        _addAaveV3Leafs(leafs, supplyAssets, borrowAssets, claimAssets);
 
         // ========================== MakerDAO ==========================
         /**
