@@ -15,7 +15,7 @@ contract DeployArcticLens is Script {
 
     function run() external {
         vm.createSelectFork("mantra");
-        uint256 deployerKey = vm.envUint("ETHERFI_LIQUID_DEPLOYER");
+        uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");
         Deployer deployer = Deployer(deployerAddr);
 
         vm.startBroadcast(deployerKey);
