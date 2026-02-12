@@ -4,13 +4,9 @@ pragma solidity 0.8.21;
 import {ArcticArchitectureLens} from "src/helper/ArcticArchitectureLens.sol";
 import {Deployer} from "src/helper/Deployer.sol";
 import "forge-std/Script.sol";
+import {MantraConstants as Constants} from "./00_MantraConstants.sol";
 
-/**
- * @notice Script to deploy ArcticArchitectureLens through the Deployer.
- * @dev Run with: forge script script/04_DeployArcticLens.s.sol --rpc-url <mantra_rpc> --broadcast --verify
- */
 contract DeployArcticLens is Script {
-    // Deployer address (deployed in step 01)
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
 
     function run() external {
@@ -20,9 +16,9 @@ contract DeployArcticLens is Script {
 
         vm.startBroadcast(deployerKey);
 
-        // Deploy Lens via Deployer
+        // Deploy Lens via Deployer using Constants name
         address lens = deployer.deployContract(
-            "Arctic Architecture Lens V1.0",
+            Constants.ARCTIC_LENS_NAME,
             type(ArcticArchitectureLens).creationCode,
             hex"",
             0

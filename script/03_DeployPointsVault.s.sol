@@ -19,9 +19,7 @@ import {
 import {Deployer} from "src/helper/Deployer.sol";
 import {ERC20} from "@solmate/tokens/ERC20.sol";
 import "forge-std/Script.sol";
-import {
-    MantraMainnetConstants as Constants
-} from "./00_MantraMainnetConstants.sol";
+import {MantraConstants as Constants} from "./00_MantraConstants.sol";
 
 contract DeployPointsVault is Script {
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
@@ -31,6 +29,16 @@ contract DeployPointsVault is Script {
         vm.createSelectFork("mantra");
         uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");
         address owner = vm.addr(deployerKey);
+
+        // Environment Toggle
+        bool isMainnet = vm.envOr("MANTRA_MAINNET", false);
+        address mUSD = isMainnet
+            ? Constants.mUSD_MAINNET
+            : Constants.mUSD_TESTNET;
+        address WETH = isMainnet
+            ? Constants.WETH_MAINNET
+            : Constants.WETH_TESTNET;
+
         Deployer deployer = Deployer(deployerAddr);
         RolesAuthority auth = RolesAuthority(rolesAuthAddr);
 
@@ -38,7 +46,7 @@ contract DeployPointsVault is Script {
 
         // --- 1. Deploy Core Components ---
         address vault = deployer.deployContract(
-            Constants.POINTS_NAME,
+            Constants.POINTS_VAULT_NAME,
             type(BoringVault).creationCode,
             abi.encode(
                 owner,
@@ -50,14 +58,14 @@ contract DeployPointsVault is Script {
         );
 
         address accountant = deployer.deployContract(
-            "Points Accountant V1.0",
+            Constants.POINTS_ACCOUNTANT_NAME,
             type(AccountantWithFixedRate).creationCode,
             abi.encode(
                 owner, // owner
                 vault, // vault
                 owner, // payoutAddress
                 Constants.ACCOUNTANT_STARTING_EXCHANGE_RATE, // startingExchangeRate
-                Constants.mUSD, // base
+                mUSD, // base (Dynamic)
                 Constants.ACCOUNTANT_ALLOWED_EXCHANGE_RATE_CHANGE_UPPER,
                 Constants.ACCOUNTANT_ALLOWED_EXCHANGE_RATE_CHANGE_LOWER,
                 Constants.ACCOUNTANT_MINIMUM_UPDATE_DELAY,
@@ -68,14 +76,14 @@ contract DeployPointsVault is Script {
         );
 
         address teller = deployer.deployContract(
-            "Points Teller V1.0",
+            Constants.POINTS_TELLER_NAME,
             type(TellerWithMultiAssetSupport).creationCode,
-            abi.encode(owner, vault, accountant, Constants.WETH),
+            abi.encode(owner, vault, accountant, WETH), // WETH (Dynamic)
             0
         );
 
         address delayedWithdraw = deployer.deployContract(
-            "Points DelayedWithdraw V1.0",
+            Constants.POINTS_DW_NAME,
             type(DelayedWithdraw).creationCode,
             abi.encode(owner, vault, accountant, owner),
             0
@@ -106,7 +114,7 @@ contract DeployPointsVault is Script {
         );
         auth.setUserRole(delayedWithdraw, Constants.BURNER_ROLE, true);
 
-        // Note: Even for FixedRate, we keep the capability in case we swap to a RateProvider later or manual updates
+        // Update Rate Role
         auth.setRoleCapability(
             Constants.UPDATE_EXCHANGE_RATE_ROLE,
             accountant,
@@ -164,14 +172,14 @@ contract DeployPointsVault is Script {
             Constants.TELLER_SHARE_LOCK_PERIOD
         );
         TellerWithMultiAssetSupport(payable(teller)).updateAssetData(
-            ERC20(Constants.mUSD),
+            ERC20(mUSD),
             true,
             true,
             0
         );
 
         DelayedWithdraw(delayedWithdraw).setupWithdrawAsset(
-            ERC20(Constants.mUSD),
+            ERC20(mUSD),
             Constants.DW_WITHDRAW_DELAY,
             Constants.DW_COMPLETION_WINDOW,
             Constants.DW_WITHDRAW_FEE,
@@ -183,6 +191,7 @@ contract DeployPointsVault is Script {
 
         vm.stopBroadcast();
 
+        console.log("Environment:", isMainnet ? "Mainnet" : "Testnet");
         console.log("Points Vault:", vault);
         console.log("Points Accountant (Fixed):", accountant);
         console.log("Points Teller:", teller);

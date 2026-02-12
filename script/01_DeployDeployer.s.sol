@@ -7,9 +7,7 @@ import {
     Authority
 } from "@solmate/auth/authorities/RolesAuthority.sol";
 import "forge-std/Script.sol";
-import {
-    MantraMainnetConstants as Constants
-} from "./00_MantraMainnetConstants.sol";
+import {MantraConstants as Constants} from "./00_MantraConstants.sol";
 
 contract DeployDeployer is Script {
     function run() external {
