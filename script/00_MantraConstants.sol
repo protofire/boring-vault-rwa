@@ -9,21 +9,57 @@ library MantraConstants {
     // --- Testnet (Dukong) ---
     address internal constant mUSD_TESTNET =
         0x4B545d0758eda6601B051259bD977125fbdA7ba2;
-    address internal constant WETH_TESTNET = address(0);  // not used
+    address internal constant WETH_TESTNET = address(0); // not used
 
     // --- Mainnet (Placeholder) ---
-    address internal constant mUSD_MAINNET = 0xd2b95283011E47257917770D28Bb3EE44c849f6F;
-    address internal constant WETH_MAINNET = address(0);  // not used
+    address internal constant mUSD_MAINNET =
+        0xd2b95283011E47257917770D28Bb3EE44c849f6F;
+    address internal constant WETH_MAINNET = address(0); // not used
 
     // ==========================================
     // Roles Authority Configuration
     // ==========================================
+
+    /* 
+    Purpose: Operational permissions 
+    (configure vault/teller/strategies, pause/unpause, etc.)
+    Should be: Multisig or admin EOA 
+    */
     uint8 internal constant MANAGER_ROLE = 1;
     uint8 internal constant DEPLOYER_ROLE = 1;
+
+    /* 
+    Purpose: Minting shares/tokens 
+    (usually Teller or Vault)
+    Should be: Teller contract 
+    (or vault contract depending on design) 
+    */
     uint8 internal constant MINTER_ROLE = 2;
+
+    /* 
+    Purpose: Burning shares/tokens on withdraw
+    Should be: DelayedWithdraw contract 
+    */
     uint8 internal constant BURNER_ROLE = 3;
+
+    /* 
+    Purpose: Owner role 
+    (usually the deployer or multisig)
+    Should be: Multisig or admin EOA 
+    */
     uint8 internal constant OWNER_ROLE = 8;
+
+    /* 
+    Purpose: Separate privileged operations 
+    (emergency, config, upgrade hooks)
+    Should be: Multisig
+    */
     uint8 internal constant MULTISIG_ROLE = 9;
+
+    /* 
+    Purpose: Update exchange rate role 
+    Should be: Updater bot account (EOA with key) or updater contract
+    */
     uint8 internal constant UPDATE_EXCHANGE_RATE_ROLE = 11;
 
     // ==========================================
@@ -72,7 +108,7 @@ library MantraConstants {
     // ==========================================
     // Delayed Withdraw Configuration
     // ==========================================
-    uint32 internal constant DW_WITHDRAW_DELAY = 0;  // zero delay on withdraw
+    uint32 internal constant DW_WITHDRAW_DELAY = 0; // zero delay on withdraw
     uint32 internal constant DW_COMPLETION_WINDOW = 7 days;
     uint16 internal constant DW_WITHDRAW_FEE = 0;
     uint16 internal constant DW_MAX_LOSS = 100; // 1%
