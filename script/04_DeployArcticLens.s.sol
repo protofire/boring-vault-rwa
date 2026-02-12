@@ -26,6 +26,6 @@ contract DeployArcticLens is Script {
 
         vm.stopBroadcast();
 
-        console.log("ArcticArchitectureLens deployed at:", lens);
+        console.log("Lens deployed at:", lens);
     }
 }

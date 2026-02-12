@@ -6,15 +6,14 @@ library MantraConstants {
     // External Addresses
     // ==========================================
 
-    // --- Testnet (Dukia) ---
+    // --- Testnet (Dukong) ---
     address internal constant mUSD_TESTNET =
         0x4B545d0758eda6601B051259bD977125fbdA7ba2;
-    address internal constant WETH_TESTNET = address(0);
+    address internal constant WETH_TESTNET = address(0);  // not used
 
     // --- Mainnet (Placeholder) ---
-    // TODO: Update these before Mainnet deployment
-    address internal constant mUSD_MAINNET = address(0);
-    address internal constant WETH_MAINNET = address(0);
+    address internal constant mUSD_MAINNET = 0xd2b95283011E47257917770D28Bb3EE44c849f6F;
+    address internal constant WETH_MAINNET = address(0);  // not used
 
     // ==========================================
     // Roles Authority Configuration
@@ -32,13 +31,13 @@ library MantraConstants {
     // ==========================================
 
     // Arctic Lens
-    string internal constant ARCTIC_LENS_NAME = "Arctic Architecture Lens V1.0";
+    string internal constant ARCTIC_LENS_NAME = "Lens V1.0";
 
     // Maxi Yield Vault
     string internal constant MAXI_VAULT_NAME = "Maxi Yield Vault V1.0";
-    string internal constant MAXI_SYMBOL = "my-mUSD";
+    string internal constant MAXI_SYMBOL = "MY-mantraUSD";
     uint8 internal constant MAXI_DECIMALS = 6;
-    string internal constant MAXI_TOKEN_NAME = "Maxi Yield mUSD";
+    string internal constant MAXI_TOKEN_NAME = "Maxi Yield mantraUSD";
     string internal constant MAXI_ACCOUNTANT_NAME =
         "Maxi Yield Accountant V1.0";
     string internal constant MAXI_TELLER_NAME = "Maxi Yield Teller V1.0";
@@ -46,9 +45,9 @@ library MantraConstants {
 
     // Points Vault
     string internal constant POINTS_VAULT_NAME = "Points Vault V1.0";
-    string internal constant POINTS_SYMBOL = "pts-mUSD";
+    string internal constant POINTS_SYMBOL = "PTS-mantraUSD";
     uint8 internal constant POINTS_DECIMALS = 6;
-    string internal constant POINTS_TOKEN_NAME = "Points mUSD";
+    string internal constant POINTS_TOKEN_NAME = "Points mantraUSD";
     string internal constant POINTS_ACCOUNTANT_NAME = "Points Accountant V1.0";
     string internal constant POINTS_TELLER_NAME = "Points Teller V1.0";
     string internal constant POINTS_DW_NAME = "Points DelayedWithdraw V1.0";
@@ -73,7 +72,7 @@ library MantraConstants {
     // ==========================================
     // Delayed Withdraw Configuration
     // ==========================================
-    uint32 internal constant DW_WITHDRAW_DELAY = 0;
+    uint32 internal constant DW_WITHDRAW_DELAY = 0;  // zero delay on withdraw
     uint32 internal constant DW_COMPLETION_WINDOW = 7 days;
     uint16 internal constant DW_WITHDRAW_FEE = 0;
     uint16 internal constant DW_MAX_LOSS = 100; // 1%
