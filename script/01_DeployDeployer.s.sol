@@ -9,7 +9,7 @@ import {
 import "forge-std/Script.sol";
 import {
     MantraMainnetConstants as Constants
-} from "./MantraMainnetConstants.sol";
+} from "./00_MantraMainnetConstants.sol";
 
 contract DeployDeployer is Script {
     function run() external {

@@ -18,7 +18,7 @@ import {ERC20} from "@solmate/tokens/ERC20.sol";
 import "forge-std/Script.sol";
 import {
     MantraMainnetConstants as Constants
-} from "./MantraMainnetConstants.sol";
+} from "./00_MantraMainnetConstants.sol";
 
 contract DeployMaxiYieldVault is Script {
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
