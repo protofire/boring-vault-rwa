@@ -20,45 +20,81 @@ library MantraConstants {
     // Roles Authority Configuration
     // ==========================================
 
-    /* 
-    Purpose: Operational permissions 
-    (configure vault/teller/strategies, pause/unpause, etc.)
-    Should be: Multisig or admin EOA 
+    /*
+    DEPLOYER_ROLE (id=1)
+    Purpose: Permission to deploy contracts via helper Deployer.
+    Applied in current deploy scripts:
+      - script/01_DeployDeployer.s.sol:
+          capability: Deployer.deployContract()
+          contract: Deployer
+          grantee: deployer EOA (MANTRA_DEPLOYER)
+    Role holder: dedicated deployer key or deployment multisig.
     */
-    uint8 internal constant MANAGER_ROLE = 1;
     uint8 internal constant DEPLOYER_ROLE = 1;
 
-    /* 
-    Purpose: Minting shares/tokens 
-    (usually Teller or Vault)
-    Should be: Teller contract 
-    (or vault contract depending on design) 
+    /*
+    MANAGER_ROLE (id=1)
+    Purpose: Generic operational/admin permissions (manage/pause/config/update).
+    Applied in current deploy scripts:
+      - Not explicitly granted in 01-04 scripts.
+      - Same id as DEPLOYER_ROLE, so any capability attached to role id=1
+        is effectively shared between MANAGER_ROLE and DEPLOYER_ROLE.
+    Typical holder: Multisig or admin EOA.
+    */
+    uint8 internal constant MANAGER_ROLE = DEPLOYER_ROLE;
+
+    /*
+    MINTER_ROLE (id=2)
+    Purpose: Mint BoringVault shares through vault.enter().
+    Applied in current deploy scripts:
+      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/03_DeployPointsVault.s.sol:  
+          capability: BoringVault.enter()
+          contract: Maxi Yield BoringVault, Points BoringVault
+          grantee: Maxi Yield TellerWithMultiAssetSupport, Points TellerWithMultiAssetSupport
+    Role holder: Teller contract that processes deposits.
     */
     uint8 internal constant MINTER_ROLE = 2;
 
-    /* 
-    Purpose: Burning shares/tokens on withdraw
-    Should be: DelayedWithdraw contract 
+    /*
+    BURNER_ROLE (id=3)
+    Purpose: Burn BoringVault shares through vault.exit() during withdrawals/refunds.
+    Applied in current deploy scripts:
+      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/03_DeployPointsVault.s.sol:
+          capability: BoringVault.exit()
+          contract: Maxi Yield BoringVault, Points BoringVault
+          grantee: Maxi Yield DelayedWithdraw, Points DelayedWithdraw
+    Role holder: withdrawal coordinator contract (DelayedWithdraw).
     */
     uint8 internal constant BURNER_ROLE = 3;
 
-    /* 
-    Purpose: Owner role 
-    (usually the deployer or multisig)
-    Should be: Multisig or admin EOA 
+    /*
+    OWNER_ROLE (id=8)
+    Purpose: Day-to-day configuration for Teller/Withdraw flows.
+    Applied in current deploy scripts:
+      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/03_DeployPointsVault.s.sol:
+          TellerWithMultiAssetSupport.setShareLockPeriod()
+          TellerWithMultiAssetSupport.updateAssetData()
+          DelayedWithdraw.setupWithdrawAsset()
+          DelayedWithdraw.setPullFundsFromVault()
+          contract: Maxi Yield | Points TellerWithMultiAssetSupport, Maxi Yield | Points DelayedWithdraw
+          grantee: owner EOA (MANTRA_DEPLOYER)
+    Role holder: operations multisig (preferable) or trusted admin EOA.
     */
     uint8 internal constant OWNER_ROLE = 8;
 
-    /* 
-    Purpose: Separate privileged operations 
-    (emergency, config, upgrade hooks)
-    Should be: Multisig
-    */
-    uint8 internal constant MULTISIG_ROLE = 9;
-
-    /* 
-    Purpose: Update exchange rate role 
-    Should be: Updater bot account (EOA with key) or updater contract
+    /*
+    UPDATE_EXCHANGE_RATE_ROLE (id=11)
+    Purpose: Call accountant.updateExchangeRate() to move vault share price.
+    Applied in current deploy scripts:
+      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/03_DeployPointsVault.s.sol:      
+          contract: Maxi Yield AccountantWithRateProviders, Points AccountantWithFixedRate
+          grantee: owner EOA (MANTRA_DEPLOYER)
+          capability: AccountantWithRateProviders.updateExchangeRate()
+    Role holder: dedicated updater bot/service with strict monitoring.
     */
     uint8 internal constant UPDATE_EXCHANGE_RATE_ROLE = 11;
 
