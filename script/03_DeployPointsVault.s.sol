@@ -97,7 +97,21 @@ contract DeployPointsVault is Script {
         TellerWithMultiAssetSupport(payable(teller)).setAuthority(auth);
         DelayedWithdraw(delayedWithdraw).setAuthority(auth);
 
+        // --- Role Configuration ---
+        address rateUpdater = isMainnet
+            ? Constants.RATE_UPDATER_MAINNET
+            : Constants.RATE_UPDATER_TESTNET;
+        address manager = isMainnet
+            ? Constants.MANAGER_MAINNET
+            : Constants.MANAGER_TESTNET;
+
+        // Fallback to Owner if not set (for safety/testing)
+        if (rateUpdater == address(0)) rateUpdater = owner;
+        if (manager == address(0)) manager = owner;
+
         // Grant Roles
+
+        // MINTER_ROLE (Teller)
         auth.setRoleCapability(
             Constants.MINTER_ROLE,
             vault,
@@ -106,6 +120,7 @@ contract DeployPointsVault is Script {
         );
         auth.setUserRole(teller, Constants.MINTER_ROLE, true);
 
+        // BURNER_ROLE (DelayedWithdraw, BoringVault)
         auth.setRoleCapability(
             Constants.BURNER_ROLE,
             vault,
@@ -114,16 +129,23 @@ contract DeployPointsVault is Script {
         );
         auth.setUserRole(delayedWithdraw, Constants.BURNER_ROLE, true);
 
-        // Update Rate Role
+        // UPDATE_EXCHANGE_RATE_ROLE (Rate Updater)
         auth.setRoleCapability(
             Constants.UPDATE_EXCHANGE_RATE_ROLE,
             accountant,
             AccountantWithRateProviders.updateExchangeRate.selector,
             true
         );
-        auth.setUserRole(owner, Constants.UPDATE_EXCHANGE_RATE_ROLE, true);
+        auth.setUserRole(
+            rateUpdater,
+            Constants.UPDATE_EXCHANGE_RATE_ROLE,
+            true
+        );
 
-        // Owner Roles
+        // MANAGER_ROLE (Manager)
+        auth.setUserRole(manager, Constants.MANAGER_ROLE, true);
+
+        // OWNER_ROLE (Owner - kept as deployer/owner for now)
         auth.setRoleCapability(
             Constants.OWNER_ROLE,
             teller,
@@ -188,6 +210,48 @@ contract DeployPointsVault is Script {
         DelayedWithdraw(delayedWithdraw).setPullFundsFromVault(true);
 
         BoringVault(payable(vault)).setBeforeTransferHook(teller);
+
+        // --- Ownership Transfer ---
+        // 1. Identify Target Owner
+        address mantraOwner = vm.envOr("MANTRA_OWNER", address(0));
+        if (mantraOwner == address(0)) {
+            mantraOwner = isMainnet
+                ? Constants.OWNER_MAINNET
+                : Constants.OWNER_TESTNET;
+        }
+
+        // 2. Perform Transfer if valid and different from deployer
+        if (mantraOwner != address(0) && mantraOwner != owner) {
+            console.log("Transferring ownership to:", mantraOwner);
+
+            // Grant OWNER_ROLE to new owner first
+            if (!auth.doesUserHaveRole(mantraOwner, Constants.OWNER_ROLE)) {
+                auth.setUserRole(mantraOwner, Constants.OWNER_ROLE, true);
+            }
+
+            // Transfer Auth Ownership of components
+            if (BoringVault(payable(vault)).owner() != mantraOwner)
+                BoringVault(payable(vault)).transferOwnership(mantraOwner);
+            if (AccountantWithFixedRate(accountant).owner() != mantraOwner)
+                AccountantWithFixedRate(accountant).transferOwnership(
+                    mantraOwner
+                );
+            if (
+                TellerWithMultiAssetSupport(payable(teller)).owner() !=
+                mantraOwner
+            )
+                TellerWithMultiAssetSupport(payable(teller)).transferOwnership(
+                    mantraOwner
+                );
+            if (DelayedWithdraw(delayedWithdraw).owner() != mantraOwner)
+                DelayedWithdraw(delayedWithdraw).transferOwnership(mantraOwner);
+
+            // Revoke Roles from Deployer
+            if (auth.doesUserHaveRole(owner, Constants.OWNER_ROLE)) {
+                auth.setUserRole(owner, Constants.OWNER_ROLE, false);
+                console.log("Revoked OWNER_ROLE from deployer");
+            }
+        }
 
         vm.stopBroadcast();
 

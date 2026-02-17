@@ -3,18 +3,46 @@ pragma solidity 0.8.21;
 
 library MantraConstants {
     // ==========================================
-    // External Addresses
+    // USER CONFIGURATION
     // ==========================================
 
+    /* 
+    EXAMPLE:
+    1. RATE_UPDATER: The address (e.g. Cron Job Bot) that updates exchange rates.
+    2. MANAGER: The address (e.g. Multisig) for pausing/emergency actions.
+    3. OWNER: The address (e.g. Multisig) that will OWN the system after deployment.
+    */
+
     // --- Testnet (Dukong) ---
+    address internal constant RATE_UPDATER_TESTNET =
+        0x0000000000000000000000000000000000000000;
+    address internal constant MANAGER_TESTNET =
+        0x0000000000000000000000000000000000000000;
+    address internal constant OWNER_TESTNET =
+        0x0000000000000000000000000000000000000000;
+
+    // --- Mainnet ---
+    address internal constant RATE_UPDATER_MAINNET =
+        0x0000000000000000000000000000000000000000;
+    address internal constant MANAGER_MAINNET =
+        0x0000000000000000000000000000000000000000;
+    address internal constant OWNER_MAINNET =
+        0x0000000000000000000000000000000000000000;
+
+    // ==========================================
+    // INTERNAL CONSTANTS
+    // ==========================================
+
+    // --- External Tokens ---
+    // Testnet (Dukong)
     address internal constant mUSD_TESTNET =
         0x4B545d0758eda6601B051259bD977125fbdA7ba2;
-    address internal constant WETH_TESTNET = address(0); // not used
+    address internal constant WETH_TESTNET = address(0);
 
-    // --- Mainnet (Placeholder) ---
+    // Mainnet (Placeholder)
     address internal constant mUSD_MAINNET =
         0xd2b95283011E47257917770D28Bb3EE44c849f6F;
-    address internal constant WETH_MAINNET = address(0); // not used
+    address internal constant WETH_MAINNET = address(0);
 
     // ==========================================
     // Roles Authority Configuration
