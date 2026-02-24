@@ -21,12 +21,23 @@ import {ERC20} from "@solmate/tokens/ERC20.sol";
 import "forge-std/Script.sol";
 import {MantraConstants as Constants} from "./00_MantraConstants.sol";
 
+// forge script script/03_DeployPointsVault.s.sol \
+//   --rpc-url mantra_dukong \
+//   --broadcast \
+//   --chain-id 5887 \
+//   --legacy \
+//   --skip-simulation \
+//   -vvvv
+
 contract DeployPointsVault is Script {
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
     address public rolesAuthAddr = vm.envAddress("ROLES_AUTH_CONTRACT_ADDRESS");
 
     function run() external {
-        vm.createSelectFork("mantra");
+        string memory forkName = vm.envOr("MANTRA_MAINNET", false)
+            ? "mantra"
+            : "mantra_dukong";
+        vm.createSelectFork(forkName);
         uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");
         address owner = vm.addr(deployerKey);
 
@@ -168,6 +179,86 @@ contract DeployPointsVault is Script {
             Constants.OWNER_ROLE,
             delayedWithdraw,
             DelayedWithdraw.setPullFundsFromVault.selector,
+            true
+        );
+
+        // --- OWNER_ROLE Maintenance & Fees ---
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeWithdrawFee.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeWithdrawDelay.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeCompletionWindow.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeMaxLoss.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.setFeeAddress.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updatePayoutAddress.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.pause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.unpause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithFixedRate.setYieldDistributor.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.pause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.unpause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.denyAll.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.allowAll.selector,
             true
         );
         auth.setUserRole(owner, Constants.OWNER_ROLE, true);

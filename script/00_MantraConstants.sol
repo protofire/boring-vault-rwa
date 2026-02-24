@@ -15,19 +15,19 @@ library MantraConstants {
 
     // --- Testnet (Dukong) ---
     address internal constant RATE_UPDATER_TESTNET =
-        0x0000000000000000000000000000000000000000;
+        0x37723e376FdF70854665B5f1a5C49cB30E1691AC;
     address internal constant MANAGER_TESTNET =
-        0x0000000000000000000000000000000000000000;
+        0x09676Ee4685B618d0DCc85E221019c9Ce3810211;
     address internal constant OWNER_TESTNET =
-        0x0000000000000000000000000000000000000000;
+        0x09676Ee4685B618d0DCc85E221019c9Ce3810211;
 
     // --- Mainnet ---
     address internal constant RATE_UPDATER_MAINNET =
-        0x0000000000000000000000000000000000000000;
+        0x37723e376FdF70854665B5f1a5C49cB30E1691AC;
     address internal constant MANAGER_MAINNET =
-        0x0000000000000000000000000000000000000000;
+        0x9bbf09dEC8B93CE548eA6fE50e9786964e47Ee5e;
     address internal constant OWNER_MAINNET =
-        0x0000000000000000000000000000000000000000;
+        0x9bbf09dEC8B93CE548eA6fE50e9786964e47Ee5e;
 
     // ==========================================
     // INTERNAL CONSTANTS
@@ -75,11 +75,11 @@ library MantraConstants {
     MINTER_ROLE (id=2)
     Purpose: Mint BoringVault shares through vault.enter().
     Applied in current deploy scripts:
-      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/02_DeployRFRYieldVault.s.sol:
       - script/03_DeployPointsVault.s.sol:  
           capability: BoringVault.enter()
-          contract: Maxi Yield BoringVault, Points BoringVault
-          grantee: Maxi Yield TellerWithMultiAssetSupport, Points TellerWithMultiAssetSupport
+          contract: RFR Yield BoringVault, Points BoringVault
+          grantee: RFR Yield TellerWithMultiAssetSupport, Points TellerWithMultiAssetSupport
     Role holder: Teller contract that processes deposits.
     */
     uint8 internal constant MINTER_ROLE = 2;
@@ -88,11 +88,11 @@ library MantraConstants {
     BURNER_ROLE (id=3)
     Purpose: Burn BoringVault shares through vault.exit() during withdrawals/refunds.
     Applied in current deploy scripts:
-      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/02_DeployRFRYieldVault.s.sol:
       - script/03_DeployPointsVault.s.sol:
           capability: BoringVault.exit()
-          contract: Maxi Yield BoringVault, Points BoringVault
-          grantee: Maxi Yield DelayedWithdraw, Points DelayedWithdraw
+          contract: RFR Yield BoringVault, Points BoringVault
+          grantee: RFR Yield DelayedWithdraw, Points DelayedWithdraw
     Role holder: withdrawal coordinator contract (DelayedWithdraw).
     */
     uint8 internal constant BURNER_ROLE = 3;
@@ -101,13 +101,13 @@ library MantraConstants {
     OWNER_ROLE (id=8)
     Purpose: Day-to-day configuration for Teller/Withdraw flows.
     Applied in current deploy scripts:
-      - script/02_DeployMaxiYieldVault.s.sol:
+      - script/02_DeployRFRYieldVault.s.sol:
       - script/03_DeployPointsVault.s.sol:
           TellerWithMultiAssetSupport.setShareLockPeriod()
           TellerWithMultiAssetSupport.updateAssetData()
           DelayedWithdraw.setupWithdrawAsset()
           DelayedWithdraw.setPullFundsFromVault()
-          contract: Maxi Yield | Points TellerWithMultiAssetSupport, Maxi Yield | Points DelayedWithdraw
+          contract: RFR Yield | Points TellerWithMultiAssetSupport, RFR Yield | Points DelayedWithdraw
           grantee: owner EOA (MANTRA_DEPLOYER)
     Role holder: operations multisig (preferable) or trusted admin EOA.
     */
@@ -117,9 +117,9 @@ library MantraConstants {
     UPDATE_EXCHANGE_RATE_ROLE (id=11)
     Purpose: Call accountant.updateExchangeRate() to move vault share price.
     Applied in current deploy scripts:
-      - script/02_DeployMaxiYieldVault.s.sol:
-      - script/03_DeployPointsVault.s.sol:      
-          contract: Maxi Yield AccountantWithRateProviders, Points AccountantWithFixedRate
+      - script/02_DeployRFRYieldVault.s.sol:
+      - script/02_DeployRFRYieldVault.s.sol:      
+          contract: RFR Yield AccountantWithRateProviders, Points AccountantWithFixedRate
           grantee: owner EOA (MANTRA_DEPLOYER)
           capability: AccountantWithRateProviders.updateExchangeRate()
     Role holder: dedicated updater bot/service with strict monitoring.
@@ -133,21 +133,20 @@ library MantraConstants {
     // Arctic Lens
     string internal constant ARCTIC_LENS_NAME = "Lens V1.0";
 
-    // Maxi Yield Vault
-    string internal constant MAXI_VAULT_NAME = "Maxi Yield Vault V1.0";
-    string internal constant MAXI_SYMBOL = "MY-mantraUSD";
-    uint8 internal constant MAXI_DECIMALS = 6;
-    string internal constant MAXI_TOKEN_NAME = "Maxi Yield mantraUSD";
-    string internal constant MAXI_ACCOUNTANT_NAME =
-        "Maxi Yield Accountant V1.0";
-    string internal constant MAXI_TELLER_NAME = "Maxi Yield Teller V1.0";
-    string internal constant MAXI_DW_NAME = "Maxi Yield DelayedWithdraw V1.0";
+    // RFR Yield Vault
+    string internal constant RFR_VAULT_NAME = "RFR Yield Vault V1.0";
+    string internal constant RFR_SYMBOL = "RFR-mUSD";
+    uint8 internal constant RFR_DECIMALS = 6;
+    string internal constant RFR_TOKEN_NAME = "RFR Yield mUSD";
+    string internal constant RFR_ACCOUNTANT_NAME = "RFR Yield Accountant V1.0";
+    string internal constant RFR_TELLER_NAME = "RFR Yield Teller V1.0";
+    string internal constant RFR_DW_NAME = "RFR Yield DelayedWithdraw V1.0";
 
     // Points Vault
     string internal constant POINTS_VAULT_NAME = "Points Vault V1.0";
-    string internal constant POINTS_SYMBOL = "PTS-mantraUSD";
+    string internal constant POINTS_SYMBOL = "PTS-mUSD";
     uint8 internal constant POINTS_DECIMALS = 6;
-    string internal constant POINTS_TOKEN_NAME = "Points mantraUSD";
+    string internal constant POINTS_TOKEN_NAME = "Points mUSD";
     string internal constant POINTS_ACCOUNTANT_NAME = "Points Accountant V1.0";
     string internal constant POINTS_TELLER_NAME = "Points Teller V1.0";
     string internal constant POINTS_DW_NAME = "Points DelayedWithdraw V1.0";

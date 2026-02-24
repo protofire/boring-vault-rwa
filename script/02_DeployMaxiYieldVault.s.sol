@@ -22,8 +22,19 @@ contract DeployMaxiYieldVault is Script {
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
     address public rolesAuthAddr = vm.envAddress("ROLES_AUTH_CONTRACT_ADDRESS");
 
+    // forge script script/02_DeployMaxiYieldVault.s.sol \
+    //   --rpc-url mantra_dukong \
+    //   --broadcast \
+    //   --chain-id 5887 \
+    //   --legacy \
+    //   --skip-simulation \
+    //   -vvvv
+
     function run() external {
-        vm.createSelectFork("mantra");
+        string memory forkName = vm.envOr("MANTRA_MAINNET", false)
+            ? "mantra"
+            : "mantra_dukong";
+        vm.createSelectFork(forkName);
         uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");
         address owner = vm.addr(deployerKey);
 
@@ -43,19 +54,19 @@ contract DeployMaxiYieldVault is Script {
 
         // --- 1. Deploy Core Components ---
         address vault = deployer.deployContract(
-            Constants.MAXI_VAULT_NAME,
+            Constants.RFR_VAULT_NAME,
             type(BoringVault).creationCode,
             abi.encode(
                 owner,
-                Constants.MAXI_TOKEN_NAME,
-                Constants.MAXI_SYMBOL,
-                Constants.MAXI_DECIMALS
+                Constants.RFR_TOKEN_NAME,
+                Constants.RFR_SYMBOL,
+                Constants.RFR_DECIMALS
             ),
             0
         );
 
         address accountant = deployer.deployContract(
-            Constants.MAXI_ACCOUNTANT_NAME,
+            Constants.RFR_ACCOUNTANT_NAME,
             type(AccountantWithRateProviders).creationCode,
             abi.encode(
                 owner, // owner
@@ -73,14 +84,14 @@ contract DeployMaxiYieldVault is Script {
         );
 
         address teller = deployer.deployContract(
-            Constants.MAXI_TELLER_NAME,
+            Constants.RFR_TELLER_NAME,
             type(TellerWithMultiAssetSupport).creationCode,
             abi.encode(owner, vault, accountant, WETH), // WETH (Dynamic)
             0
         );
 
         address delayedWithdraw = deployer.deployContract(
-            Constants.MAXI_DW_NAME,
+            Constants.RFR_DW_NAME,
             type(DelayedWithdraw).creationCode,
             abi.encode(owner, vault, accountant, owner),
             0
@@ -118,6 +129,7 @@ contract DeployMaxiYieldVault is Script {
         auth.setUserRole(teller, Constants.MINTER_ROLE, true);
 
         // BURNER_ROLE (DelayedWithdraw, BoringVault)
+        // exit.selector allows DW to burn shares and trigger the Vault to send underlying assets directly to the user
         auth.setRoleCapability(
             Constants.BURNER_ROLE,
             vault,
@@ -140,10 +152,6 @@ contract DeployMaxiYieldVault is Script {
         );
 
         // MANAGER_ROLE (Manager)
-        // Since MANAGER_ROLE = DEPLOYER_ROLE = 1, and Deployer already has it,
-        // we explicitly grant it to the manager address if different.
-        // Capabilities for Manager (e.g. manage on Vault if needed)
-        // For now, we just ensure the user has the role.
         auth.setUserRole(manager, Constants.MANAGER_ROLE, true);
 
         // OWNER_ROLE (Owner - kept as deployer/owner for now)
@@ -171,12 +179,133 @@ contract DeployMaxiYieldVault is Script {
             DelayedWithdraw.setPullFundsFromVault.selector,
             true
         );
+
+        // --- OWNER_ROLE Maintenance & Fees ---
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeWithdrawFee.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeWithdrawDelay.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeCompletionWindow.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.changeMaxLoss.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.stopWithdrawalsInAsset.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            delayedWithdraw,
+            DelayedWithdraw.setFeeAddress.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updatePlatformFee.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updatePerformanceFee.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updatePayoutAddress.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updateDelay.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updateUpper.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.updateLower.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.pause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.unpause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            accountant,
+            AccountantWithRateProviders.resetHighwaterMark.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.pause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.unpause.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.denyAll.selector,
+            true
+        );
+        auth.setRoleCapability(
+            Constants.OWNER_ROLE,
+            teller,
+            TellerWithMultiAssetSupport.allowAll.selector,
+            true
+        );
         auth.setUserRole(owner, Constants.OWNER_ROLE, true);
 
         // Public Capabilities
         auth.setPublicCapability(
             teller,
             TellerWithMultiAssetSupport.deposit.selector,
+            true
+        );
+        auth.setPublicCapability(
+            teller,
+            TellerWithMultiAssetSupport.depositWithPermit.selector,
             true
         );
         auth.setPublicCapability(
@@ -196,9 +325,9 @@ contract DeployMaxiYieldVault is Script {
         );
         TellerWithMultiAssetSupport(payable(teller)).updateAssetData(
             ERC20(mUSD),
-            true,
-            true,
-            0
+            true, // isSupported
+            true, // isDepositAsset
+            0 // sharePremium
         );
 
         DelayedWithdraw(delayedWithdraw).setupWithdrawAsset(
@@ -248,10 +377,10 @@ contract DeployMaxiYieldVault is Script {
                 DelayedWithdraw(delayedWithdraw).transferOwnership(mantraOwner);
 
             // Revoke Roles from Deployer
-            if (auth.doesUserHaveRole(owner, Constants.OWNER_ROLE)) {
-                auth.setUserRole(owner, Constants.OWNER_ROLE, false);
-                console.log("Revoked OWNER_ROLE from deployer");
-            }
+            // if (auth.doesUserHaveRole(owner, Constants.OWNER_ROLE)) {
+            //     auth.setUserRole(owner, Constants.OWNER_ROLE, false);
+            //     console.log("Revoked OWNER_ROLE from deployer");
+            // }
         }
 
         vm.stopBroadcast();

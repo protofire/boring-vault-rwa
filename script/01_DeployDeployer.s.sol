@@ -9,6 +9,8 @@ import {
 import "forge-std/Script.sol";
 import {MantraConstants as Constants} from "./00_MantraConstants.sol";
 
+// forge script script/01_DeployDeployer.s.sol --rpc-url mantra_dukong --broadcast --slow
+
 contract DeployDeployer is Script {
     function run() external {
         uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");

@@ -10,7 +10,10 @@ contract DeployArcticLens is Script {
     address public deployerAddr = vm.envAddress("DEPLOYER_CONTRACT_ADDRESS");
 
     function run() external {
-        vm.createSelectFork("mantra");
+        string memory forkName = vm.envOr("MANTRA_MAINNET", false)
+            ? "mantra"
+            : "mantra_dukong";
+        vm.createSelectFork(forkName);
         uint256 deployerKey = vm.envUint("MANTRA_DEPLOYER");
         Deployer deployer = Deployer(deployerAddr);
 
