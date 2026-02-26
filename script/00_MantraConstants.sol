@@ -134,22 +134,27 @@ library MantraConstants {
     string internal constant ARCTIC_LENS_NAME = "Lens V1.0";
 
     // RFR Yield Vault
-    string internal constant RFR_VAULT_NAME = "RFR Yield Vault V1.0";
-    string internal constant RFR_SYMBOL = "RFR-mUSD";
+    string internal constant RFR_VAULT_NAME = "wmantraUSD (Yield)";
+    string internal constant RFR_SYMBOL = "wmantraUSD-Yld";
     uint8 internal constant RFR_DECIMALS = 6;
-    string internal constant RFR_TOKEN_NAME = "RFR Yield mUSD";
-    string internal constant RFR_ACCOUNTANT_NAME = "RFR Yield Accountant V1.0";
-    string internal constant RFR_TELLER_NAME = "RFR Yield Teller V1.0";
-    string internal constant RFR_DW_NAME = "RFR Yield DelayedWithdraw V1.0";
+    string internal constant RFR_TOKEN_NAME = "wmantraUSD (Yield)";
+    string internal constant RFR_ACCOUNTANT_NAME =
+        "wmantraUSD (Yield) Accountant v1.0";
+    string internal constant RFR_TELLER_NAME = "wmantraUSD (Yield) Teller v1.0";
+    string internal constant RFR_DW_NAME =
+        "wmantraUSD (Yield) DelayedWithdraw v1.0";
 
     // Points Vault
-    string internal constant POINTS_VAULT_NAME = "Points Vault V1.0";
-    string internal constant POINTS_SYMBOL = "PTS-mUSD";
+    string internal constant POINTS_VAULT_NAME = "wmantraUSD (Points)";
+    string internal constant POINTS_SYMBOL = "wmantraUSD-Pts";
     uint8 internal constant POINTS_DECIMALS = 6;
-    string internal constant POINTS_TOKEN_NAME = "Points mUSD";
-    string internal constant POINTS_ACCOUNTANT_NAME = "Points Accountant V1.0";
-    string internal constant POINTS_TELLER_NAME = "Points Teller V1.0";
-    string internal constant POINTS_DW_NAME = "Points DelayedWithdraw V1.0";
+    string internal constant POINTS_TOKEN_NAME = "wmantraUSD (Points)";
+    string internal constant POINTS_ACCOUNTANT_NAME =
+        "wmantraUSD (Points) Accountant v1.0";
+    string internal constant POINTS_TELLER_NAME =
+        "wmantraUSD (Points) Teller v1.0";
+    string internal constant POINTS_DW_NAME =
+        "wmantraUSD (Points) DelayedWithdraw v1.0";
 
     // ==========================================
     // Accountant Configuration
@@ -161,7 +166,7 @@ library MantraConstants {
         0.5e4;
     uint64 internal constant ACCOUNTANT_MINIMUM_UPDATE_DELAY = 20 hours;
     uint16 internal constant ACCOUNTANT_PLATFORM_FEE = 0;
-    uint16 internal constant ACCOUNTANT_PERFORMANCE_FEE = 0;
+    uint16 internal constant ACCOUNTANT_PERFORMANCE_FEE = 500;
 
     // ==========================================
     // Teller Configuration
