@@ -3,7 +3,8 @@
 # This overrides the `auto_detect_solc` value
 solc_version = '0.8.21'
 auto_detect_solc = false
-evm_version = 'cancun'
+evm_version = 'london'
+viaIR = true
 optimizer = true
 optimizer_runs = 200
 fs_permissions = [{ access = "read-write", path = "./" }]
@@ -31,8 +32,8 @@ base = "${BASE_RPC_URL}"
 zircuit = "${ZIRCUIT_RPC_URL}"
 scroll = "${SCROLL_RPC_URL}"
 linea = "${LINEA_RPC_URL}"
+mantra = "${MANTRA_RPC_URL}"
 mantra_dukong = "${MANTRA_DUKONG_RPC_URL}"
-# mantra = "${MANTRA_RPC_URL}"
 
 [etherscan]
 # mainnet = { key = "${ETHERSCAN_KEY}", url = "https://api.etherscan.io/api" }
@@ -42,8 +43,9 @@ mantra_dukong = "${MANTRA_DUKONG_RPC_URL}"
 # arbitrum = { key = "${ARBISCAN_KEY}" }
 # optimism = { key = "${OPTIMISMSCAN_KEY}" }
 # base = { key = "${BASESCAN_KEY}" }
-mantra_dukong = { key = "empty", url = "https://explorer.dukong.io/api" }
-5887 = { key = "empty", url = "https://explorer.dukong.io/api" }
+mantra = { key = "any_random_string", chain = 5888, url = "https://blockscout.mantrascan.io/api" }
+mantra_dukong = { key = "any_random_string", chain = 5887, url = "https://explorer.dukong.io/api" }
+
 
 [fmt]
 FOUNDRY_FMT_LINE_LENGTH = 120
